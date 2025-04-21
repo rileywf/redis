@@ -3,6 +3,8 @@
 #include <arpa/inet.h>
 #include <string>
 #include <errno.h>
+#include <cstring>
+#include <unistd.h>
 #include <iostream>
 
 /*IPv4*/
@@ -37,6 +39,27 @@ void die(const std::string errmsg) {
     std::cout << errmsg << ": " << errno << std::endl;
 }
 
+void msg(std::string msg) {
+    std::cerr << msg << std::endl;
+}
+
+
+
+void get_conn(int connfd) {
+    char rbuf[64] = {};
+
+    ssize_t n = read(connfd, rbuf, sizeof(rbuf)-1);
+    if(n < 0) {
+        msg("read() error");
+        return;
+    }
+
+    std::cout << "client says: " << rbuf << std::endl;
+
+    char wbuf[] = "world";
+    write(connfd, wbuf, strlen(wbuf));
+}
+
 
 int main() {
     int fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -47,7 +70,7 @@ int main() {
     struct sockaddr_in addr = {};
     addr.sin_family =  AF_INET;
     addr.sin_port = htons(1234);    //port
-    addr.sin_addr.s_addr = htonl(0);    //wildcard IP 0.0.0.0
+    addr.sin_addr.s_addr = ntohl(0);    //wildcard IP 0.0.0.0
     int rv = bind(fd, (const struct sockaddr *)&addr, sizeof(addr));
     if (rv) { die("bind()"); }
 
@@ -64,7 +87,11 @@ int main() {
         if (connfd < 0) {
             continue; //error
         }
-        
+
+        get_conn(connfd);
+
+        close(connfd); // close connection
+
     }
 
 }

@@ -7,32 +7,6 @@
 #include <unistd.h>
 #include <iostream>
 
-/*IPv4*/
-struct sockaddr_in {
-    uint16_t sin_family; // AF_INET
-    uint16_t sin_port; //port in bi-endian
-    struct in_addr sin_addr;    //IPv4
-};
-
-struct in_addr {
-    uint32_t s_addr;    // IPv4 in big-endian
-};
-
-/*IPv6
-    TODO: implement this later when IPv4 is done.
-*/
-struct sockaddr_in6 {
-    uint16_t sin6_family; //AF_INET6
-    uint16_t   sin6_port; // port in big-endian
-    uint32_t sin6_flowinfo; //ignore
-    struct in6_addr sin6_addr; //IPv6
-    uint32_t sin6_scope_id; //ignore
-};
-
-struct in6_addr {
-    uint8_t s6_adder[16]; //ipv6
-};
-
 
 void die(const std::string errmsg) {
     int err = errno;
